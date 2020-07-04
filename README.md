@@ -1,0 +1,1 @@
+I needed to test some functionalities of Socket.IO so I created this basic project to use them.
