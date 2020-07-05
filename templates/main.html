@@ -2,8 +2,13 @@
 
 {% block body %}
 
-<div class="div-btn">
-    <a href="{{ url_for('posts') }}" class="btn btn-dark center txt-center">Go to posts</a>
+<div class="container col border-relax">
+    <div class="div-btn">
+        <a href="{{ url_for('posts', room='1') }}" class="btn btn-dark center txt-center txt-cute txt-5">Room 1</a>
+    </div>
+    <div class="div-btn">
+        <a href="{{ url_for('posts', room='2') }}" class="btn btn-dark center txt-center txt-cute txt-5">Room 2</a>
+    </div>
 </div>
 
 {% endblock body %}

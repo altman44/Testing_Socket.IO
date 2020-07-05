@@ -1,6 +1,9 @@
 {% extends 'index.html' %}
 
 {% block body %}
-
+<div class="container">
+    <h1>Room {{ room }}</h1>
+</div>
 <script src="{{ url_for('static', filename='js/socketio.js') }}"></script>
+<script src="{{ url_for('static', filename='js/posts.js') }}"></script>
 {% endblock body %}
