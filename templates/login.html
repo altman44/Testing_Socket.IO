@@ -1,9 +1,9 @@
 {% extends 'index.html' %}
 
 {% block body %}
-<div class="container center m-5">
-    <div class="form border-relax">
-        <input name="username" type="text" class="input-form" placeholder="Username" autofocus autocomplete="off">
-    </div>
+<div class="container center mt-5">
+    <form action="/login" method="POST" class="form">
+        <input name="username" class="input-form" placeholder="Username" autofocus autocomplete="off">
+    </form>
 </div>
 {% endblock body %}

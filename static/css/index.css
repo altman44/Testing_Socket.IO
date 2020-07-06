@@ -10,12 +10,18 @@ body {
 header {
   background-color: rgb(8, 71, 50);
   padding: 0.5% 4% 0.5% 4%;
-  margin: 0;
   color: #ffffff;
+  border: 10px solid #ffffff;
+  text-align: right;
+}
+header #header-title {
+  text-decoration: none;
+  color: #ffffff;
+  cursor: pointer;
 }
 .header-secondary {
   border: 1px solid black;
-  background-color: white;
+  background-color: #ffffff;
 }
 
 /* DIV */
@@ -31,17 +37,18 @@ header {
 .form {
   margin: 2% auto 2% auto;
   display: block;
-  width: 80%;
+  width: 80%;  
 }
 .input-form {
   width: 100%;
+  height: 1000%;
   text-align: center;
-  border: none;
+  border: 1px solid #ffffff;
+  border-radius: 50%;
   background-color: inherit;
   font-size: larger;
+  color: #ffffff;
   outline: none;
-  color: white;
-  box-shadow: 0 0 10px #719ECE;
 }
 .bg-primary {
   background-color: rgb(8, 71, 50);
@@ -100,8 +107,8 @@ header {
 }
 
 /* BORDER */
-.border-relax {
-  border: 1px #679aaa solid;
+.border-light {
+  border: 3px #ffffff solid;
 }
 
 /* TEXT */
@@ -154,6 +161,40 @@ header {
 }
 .m-5 {
   margin: 5%;
+}
+/* MARGIN TOP */
+.mt-0 {
+  margin-top: 0;
+}
+.mt-1 {
+  margin-top: 1%;
+}
+.mt-2 {
+  margin-top: 2%;
+}
+.mt-3 {
+  margin-top: 3%;
+}
+.mt-4 {
+  margin-top: 4%;
+}
+.mt-5 {
+  margin-top: 5%;
+}
+.mtx-1 {
+  margin-top: 10%;
+}
+.mtx-2 {
+  margin-top: 20%;
+}
+.mtx-3 {
+  margin-top: 30%;
+}
+.mtx-4 {
+  margin-top: 40%;
+}
+.mtx-5 {
+  margin-top: 50%;
 }
 
 /* PADDING */

@@ -16,7 +16,7 @@ class Users():
             added = True
         return added
 
-    def __searchUser(self, username, room):
+    def searchUser(self, username, room):
         foundUser = None
         i = 0
 

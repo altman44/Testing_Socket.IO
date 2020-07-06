@@ -14,8 +14,13 @@
 
 <body>
     <header>
-        <h1>Socket.IO</h1>
+        <a id="header-title" href="/" class="txt-cute txt-6">DrawMeSomething</a>
     </header>
+    {% if message and type %}
+    <div class="alert alert-{{ type }}">
+        <p class="alert-text">{{ message }}</p>
+    </div>
+    {% endif %}
     {% block body %} {% endblock body %}
 </body>
 
