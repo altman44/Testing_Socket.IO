@@ -1,0 +1,36 @@
+{% extends 'index.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/drawing.css') }}">
+{% endblock head %}
+
+{% block body %}
+<div class="container p-1">
+    <h1>Room {{ room }}</h1>
+    <div class="alert alert-inactive">
+        <p class="alert-text"></p>
+    </div>
+    <div class="card bg-primary">
+        <div class="row">
+            <div class="col col-4">
+                <div class="header-secondary">
+                    <p class="txt-cute txt-6 m-0">Users</h2>
+                </div>
+                <div id="div-users" class="bg-secondary">
+
+                </div>
+            </div>
+            <div class="col col-8">
+                <div class="header-secondary">
+                    <p class="txt-cute txt-6 m-0">Drawing</p>
+                </div>
+                <div id="div-drawing" class="bg-secondary">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/socketio.js') }}"></script>
+<script src="{{ url_for('static', filename='js/drawing.js') }}"></script>
+{% endblock body %}
