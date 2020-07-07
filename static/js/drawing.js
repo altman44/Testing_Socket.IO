@@ -1,18 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
+  let draw = false;
+  let allPoints = [];
+  let allLines = [];
+  let points = [];
+  let lines = [];
+  let svg = null;
+  let showDrawing = true;
+  let erasingShowed = false;
+
   const divDrawing = document.querySelector("#div-drawing-td");
   divDrawing.addEventListener("resize", () => {
     console.log("hey");
   });
 
-  let draw = false;
-  let points = [];
-  let lines = [];
-  let svg = null;
-  let showDraw = true;
   render();
 
   function render() {
-    console.log(divDrawing.clientWidth, divDrawing.clientHeight);
     // Create the selection area
     svg = d3
       .select("#draw")
@@ -27,11 +30,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     svg.on("mouseup", () => {
       draw = false;
-      //const builtPoints = catchDraw();
-      const builtLines = catchDraw();
-      console.log("------------------------");
-      showDraw = false;
-      socket.emit("draw", builtLines);
+      const { built, shape } = catchDraw();
+      showDrawing = false;
+      points = [];
+      socket.emit("draw", { built, shape });
     });
 
     svg.on("mousemove", function () {
@@ -43,43 +45,30 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.querySelector("#erase").onclick = () => {
-      for (i = 0; i < points.length; i++) {
-        points[i].remove();
+      for (i = 0; i < allPoints.length; i++) {
+        allPoints[i].remove();
       }
-      for (i = 0; i < lines.length; i++) {
-        lines[i].remove();
+      for (i = 0; i < allLines.length; i++) {
+        allLines[i].remove();
       }
-      points = [];
-      lines = [];
+      allPoints = [];
+      allLines = [];
+
+      if (!erasingShowed) {
+        socket.emit("erase drawing");
+      } else {
+          erasingShowed = false;
+      }
     };
   }
 
-//   function drawLine(lastPoint, x2, y2) {
-//     if (showDraw) {
-//       const line = svg
-//         .append('line')
-//         .attr('x1', lastPoint.attr("cx"))
-//         .attr('y2', lastPoint.attr("cy"))
-//         .attr('x2', x2)
-//         .attr('y2', y2)
-//         .style('stroke', 'black');
-    
-//         lines.push(line)
-//     }
-//     const point = svg
-//       .append("circle")
-//       .attr("cx", x2)
-//       .attr("cy", y2)
-//       .attr("r", 2)
-//       .style("fill", 'black');
-
-//     points.push(point);
-//     drawLine(points[points.length - 1]);
-//   }
-
-  function drawPoint(x, y, connect) {
-    const color = document.querySelector("#color-picker").value;
-    const thickness = document.querySelector("#thickness-picker").value;
+  function drawPoint(x, y, connect, thickness, color) {
+    if (!thickness) {
+      thickness = document.querySelector("#thickness-picker").value;
+    }
+    if (!color) {
+      color = document.querySelector("#color-picker").value;
+    }
 
     if (connect && points.length) {
       const lastPoint = points[points.length - 1];
@@ -93,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .style("stroke", color);
 
       lines.push(line);
+      allLines.push(line);
     }
 
     const point = svg
@@ -103,41 +93,27 @@ document.addEventListener("DOMContentLoaded", () => {
       .style("fill", color);
 
     points.push(point);
+    allPoints.push(point);
   }
 
   function catchDraw() {
-    //let builtPoints = [];
-    // let builtPoint = {};
-    // let builtCircle = {};
-    let builtLines = [];
-    let currentLine;
-    // let currentPoint;
+    let built = [];
+    let shape = "points";
+    let builtPoint = {};
+    let builtCircle = {};
+    let currentPoint;
 
-    lines.forEach((line) => {
-      currentLine = line._groups[0][0];
-      builtLine = stringifyLine(currentLine);
-      builtLines.push(builtLine);
+    points.forEach((point) => {
+      currentPoint = point._groups[0][0];
+      builtCircle = stringifyCircle(currentPoint);
+      builtPoint = stringifyPoint(builtCircle);
+      built.push(builtPoint);
     });
-    return builtLines;
-    // points.forEach((point) => {
-    //   //console.log(point);
-    //   currentPoint = point._groups[0][0];
-    //   //console.log(currentPoint.r);
-    //   builtCircle = stringifyCircle(currentPoint);
-    //   builtPoint = stringifyPoint(builtCircle);
-    //   builtPoints.push(builtPoint);
-    // });
-    // return builtPoints;
-  }
 
-  function stringifyLine(currentLine) {
-    return JSON.stringify({
-      x1: currentLine.x1.baseVal.value,
-      y1: currentLine.y1.baseVal.value,
-      x2: currentLine.x2.baseVal.value,
-      y2: currentLine.y2.baseVal.value,
-      // style: currentLine.style
-    });
+    if (lines.length) {
+      shape = "lines";
+    }
+    return { built, shape };
   }
 
   function stringifyCircle(currentPoint) {
@@ -145,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
       cx: currentPoint.cx.baseVal.value,
       cy: currentPoint.cy.baseVal.value,
       r: currentPoint.r.baseVal.value,
-      // style: currentPoint.style
+      style: currentPoint.style,
     });
   }
 
@@ -156,30 +132,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   socket.on("show draw", (data) => {
-    if (showDraw) {
-      let groups;
-      //let connected = false;
-      console.log(data);
-    //   data.forEach((pt, index) => {
-    //     pt = JSON.parse(pt);
-    //     groups = JSON.parse(pt.groups);
+    if (showDrawing) {
+      let circle;
+      let connected = false;
 
-    //     drawPoint(groups.cx, groups.cy, false);
-    //   });
-        let connected = false;
-        data.forEach((line, index) => {
-            line = JSON.parse(line);
-            console.log(line)
-            connected = true;
-            //drawLine(line.x1, line.y1, line.x2, line.y2)
-            if (index == 0) {
-                connected = false;
-                points = []
-            }
-            drawPoint(line.x2, line.y2, connected)
-        })
+      data.built.forEach((pt, index) => {
+        pt = JSON.parse(pt);
+        circle = JSON.parse(pt.groups);
+        connected = false;
+        if (data.shape == "lines") {
+          connected = true;
+        }
+        drawPoint(circle.cx, circle.cy, connected, circle.r, circle.style.fill);
+        if (index == data.built.length - 1) {
+          points = [];
+          lines = [];
+        }
+      });
     }
-    //drawLine(data.x, data.y);
-    showDraw = true;
+    showDrawing = true;
+  });
+
+  socket.on("show erasing", () => {
+    console.log("show erasing");
+    //if (!erasingShowed) {
+      document.querySelector("#erase").click();
+      erasingShowed = true;
+    //}
   });
 });

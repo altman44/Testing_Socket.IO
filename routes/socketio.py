@@ -18,3 +18,9 @@ def on_join():
 def draw(data):
     room = session['room']
     emit('show draw', data, room=room)
+
+@socketio.on('erase drawing')
+def eraseDrawing():
+    room = session['room']
+    print('a')
+    emit('show erasing', room=room)

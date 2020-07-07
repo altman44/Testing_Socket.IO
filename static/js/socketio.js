@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
   socket.emit("join room");
 
   socket.on("joined", data => {
-    console.log(data);
     loadUsers(data.usernames);
   });
 
