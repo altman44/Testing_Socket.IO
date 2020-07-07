@@ -1,5 +1,14 @@
 class User():
     def __init__(self, username, room):
-        self.username = username
-        self.room = room
-        self.score = 0
+        self.__username = username
+        self.__room = room
+        self.__score = 0
+    
+    def getUsername(self):
+        return self.__username
+
+    def getRoom(self):
+        return self.__room
+    
+    def getScore(self):
+        return self.__score

@@ -67,6 +67,7 @@ header #header-title {
   display: flex;
   flex-direction: row;
   margin: 0;
+  height: 100%;
 }
 .col {
   display:flex;
@@ -140,6 +141,10 @@ header #header-title {
 }
 .txt-6 {
   font-size: 250%;
+  margin: 0;
+}
+.txt-7 {
+  font-size: 300%;
   margin: 0;
 }
 

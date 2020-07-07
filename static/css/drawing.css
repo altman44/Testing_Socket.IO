@@ -1,8 +1,45 @@
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
 /* User's data */
-.div_user {
+#div-users-parent {
+    padding: 0;
+    border: none;
+}
+#div-users {
     width: 100%;
-    padding: 1%;
+    margin: 0;
+    border: none;
+}
+.div-user {
+    width: 100%;
+    border-bottom: 1px solid black;
+}
+.div-user-bottom {
+    border-bottom: none;
 }
 .p-username {
     font-family: 'Cute Font', cursive;
+    font-size: 200%;
+    margin: 0;
+}
+
+/* Div drawing */
+#div-drawing-parent {
+    width: 100%;
+    border: 1px solid #000000;
+    padding: 0;
+    white-space: nowrap;
+}
+#div-drawing {
+    width: 100%;
+    border: none;
+    padding: 0;
+}
+#div-drawing-td {
+    width: 100%;
+    height: 100%;
+    border: none;
 }

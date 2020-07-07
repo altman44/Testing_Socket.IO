@@ -1,12 +1,20 @@
-from application import app, session, socketio, emit, send, join_room, users
-from flask import request
+from application import app, session, socketio, emit, join_room, users
+
 @socketio.on('join room')
 def on_join():
-    #print("request.sid", request.sid)
-    room = session['room']
-    join_room(room)
-    print('room: ', room)
     username = session['username']
-    users.addUser(username, room)
-    emit('joined', {}, room=room)
+    room = session['room']
+    print(username, room)
+    if room:
+        data = {}
+        join_room(room)
+        data['newUser'] = username
+        added = users.addUser(username, room)
+        print("added: ", added)
+        data['usernames'] = users.getUsernamesByRoom(room)
+        emit('joined', data, room=room)
 
+@socketio.on('draw')
+def draw(data):
+    room = session['room']
+    emit('show draw', data, room=room)

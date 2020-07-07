@@ -1,27 +1,40 @@
-from . import User
+from models.User import User
 
 class Users():
     def __init__(self):
-        self.users = []
+        self.__users = []
         
     def usersNumber(self):
-        return len(self.users)
+        return len(self.__users)
+
+    def getUsernamesByRoom(self, room):
+        usernames = []
+        for user in self.__users:
+            if user.getRoom() == room:
+                print("username: ", user.getUsername())
+                usernames.append(user.getUsername())
+        return usernames
 
     def addUser(self, username, room):
         added = False
-        foundUser = self.__searchUser(username, room)
-        if username and room and not foundUser:
-            createdUser = User(username, room)
-            self.users.append(createdUser)
-            added = True
+        print('adding: ', username, room)
+        if username != '' and int(room) > 0:
+            print('usuario y room')
+            foundUser = self.searchUser(username, room)
+            print(foundUser)
+            if not foundUser:
+                createdUser = User(username, room)
+                print('added: ', createdUser.getUsername())
+                self.__users.append(createdUser)
+                added = True
         return added
 
     def searchUser(self, username, room):
         foundUser = None
         i = 0
-
-        while i < len(self.users) and not foundUser:
-            currentUser = self.users[i]
+        while i < len(self.__users) and not foundUser:
+            currentUser = self.__users[i]
             if currentUser.getUsername() == username and currentUser.getRoom() == room:
                 foundUser = currentUser
+            i += 1
         return foundUser

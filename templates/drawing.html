@@ -6,28 +6,60 @@
 
 {% block body %}
 <div class="container p-1">
-    <h1>Room {{ room }}</h1>
+    <p class="txt-cute txt-7">Room {{ roomNumber }}</p>
     <div class="card bg-primary border-light">
-        <div class="row">
-            <div class="col col-4">
-                <div class="header-secondary">
+        <table>
+            <thead>
+                <td class="header-secondary">
                     <p class="txt-cute txt-6 m-0">Users</h2>
-                </div>
-                <div id="div-users" class="bg-secondary">
-
-                </div>
-            </div>
-            <div class="col col-8">
-                <div class="header-secondary">
+                </td>
+                <td class="header-secondary">
                     <p class="txt-cute txt-6 m-0">Drawing</p>
-                </div>
-                <div id="div-drawing" class="bg-secondary">
+                </td>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="div-users-parent" class="bg-secondary">
+                        <table id="div-users">
 
-                </div>
+                        </table>
+                    </td>
+                    <td id="div-drawing-parent" class="bg-secondary">
+                        <table id="div-drawing">
+                            <td id="div-drawing-td">
+                                <svg id="draw"></svg>
+                            </td>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="row">
+            <div id="options" class="row">
+                <select id="color-picker">
+                    <option value="black">Black</option>
+                    <option value="red">Red</option>
+                    <option value="blue">Blue</option>
+                    <option value="green">Green</option>
+                </select>
+                <select id="thickness-picker">
+                    <option value="1">1</option>
+                    <option value="2" selected>2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+                <button id="erase">Erase</button>
             </div>
         </div>
     </div>
 </div>
 <script src="{{ url_for('static', filename='js/socketio.js') }}"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="{{ url_for('static', filename='js/drawing.js') }}"></script>
 {% endblock body %}
