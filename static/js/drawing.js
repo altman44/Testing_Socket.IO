@@ -8,19 +8,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let showDrawing = true;
   let erasingShowed = false;
 
-  const divDrawing = document.querySelector("#div-drawing-td");
-  divDrawing.addEventListener("resize", () => {
-    console.log("hey");
-  });
-
   render();
 
   function render() {
     // Create the selection area
     svg = d3
       .select("#draw")
-      .attr("height", divDrawing.clientHeight)
-      .attr("width", divDrawing.clientWidth);
+      .attr("height", '100%')
+      .attr("width", '100%');
 
     svg.on("mousedown", function () {
       draw = true;
@@ -30,10 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     svg.on("mouseup", () => {
       draw = false;
-      const { built, shape } = catchDraw();
-      showDrawing = false;
-      points = [];
-      socket.emit("draw", { built, shape });
+      // const { built, shape } = catchDraw();
+      // showDrawing = false;
+      // points = [];
+      // socket.emit("draw", { built, shape });
     });
 
     svg.on("mousemove", function () {
@@ -42,6 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       const coords = d3.mouse(this);
       drawPoint(coords[0], coords[1], true);
+      const { built, shape } = catchDraw();
+      showDrawing = false;
+      //points = [];
+      socket.emit("draw", { built, shape });
     });
 
     document.querySelector("#erase").onclick = () => {
@@ -56,8 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!erasingShowed) {
         socket.emit("erase drawing");
-      } else {
-          erasingShowed = false;
       }
     };
   }
@@ -140,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
         pt = JSON.parse(pt);
         circle = JSON.parse(pt.groups);
         connected = false;
-        if (data.shape == "lines") {
+        if (data.shape === "lines") {
           connected = true;
         }
         drawPoint(circle.cx, circle.cy, connected, circle.r, circle.style.fill);
@@ -156,8 +153,9 @@ document.addEventListener("DOMContentLoaded", () => {
   socket.on("show erasing", () => {
     console.log("show erasing");
     //if (!erasingShowed) {
-      document.querySelector("#erase").click();
       erasingShowed = true;
+      document.querySelector("#erase").click();
+      erasingShowed = false;
     //}
   });
 });
