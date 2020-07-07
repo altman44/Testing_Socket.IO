@@ -12,23 +12,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function render() {
     // Create the selection area
-    svg = d3
-      .select("#draw")
-      .attr("height", '100%')
-      .attr("width", '100%');
+    svg = d3.select("#draw").attr("height", "100%").attr("width", "100%");
 
     svg.on("mousedown", function () {
       draw = true;
-      const coords = d3.mouse(this);
-      drawPoint(coords[0], coords[1], false);
+      //const coords = d3.mouse(this);
+      //drawPoint(coords[0], coords[1], false);
     });
 
-    svg.on("mouseup", () => {
+    // svg.on("mouseup", () => {
+    document.addEventListener("mouseup", () => {
       draw = false;
+      points = [];
       // const { built, shape } = catchDraw();
       // showDrawing = false;
       // points = [];
       // socket.emit("draw", { built, shape });
+      showDrawing = false;
+      socket.emit("stop drawing");
     });
 
     svg.on("mousemove", function () {
@@ -36,11 +37,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       const coords = d3.mouse(this);
-      drawPoint(coords[0], coords[1], true);
-      const { built, shape } = catchDraw();
+      const x = coords[0];
+      const y = coords[1];
+      drawPoint(x, y, true);
+      //const { built, shape } = catchDraw();
+      const thickness = document.querySelector("#thickness-picker").value;
+      const color = document.querySelector("#color-picker").value;
       showDrawing = false;
-      //points = [];
-      socket.emit("draw", { built, shape });
+      socket.emit("draw", { x, y, thickness, color });
     });
 
     document.querySelector("#erase").onclick = () => {
@@ -93,69 +97,79 @@ document.addEventListener("DOMContentLoaded", () => {
     allPoints.push(point);
   }
 
-  function catchDraw() {
-    let built = [];
-    let shape = "points";
-    let builtPoint = {};
-    let builtCircle = {};
-    let currentPoint;
+  // function catchDraw() {
+  //   let built = [];
+  //   let shape = "points";
+  //   let builtPoint = {};
+  //   let builtCircle = {};
+  //   let currentPoint;
 
-    points.forEach((point) => {
-      currentPoint = point._groups[0][0];
-      builtCircle = stringifyCircle(currentPoint);
-      builtPoint = stringifyPoint(builtCircle);
-      built.push(builtPoint);
-    });
+  //   points.forEach((point) => {
+  //     currentPoint = point._groups[0][0];
+  //     builtCircle = stringifyCircle(currentPoint);
+  //     builtPoint = stringifyPoint(builtCircle);
+  //     built.push(builtPoint);
+  //   });
 
-    if (lines.length) {
-      shape = "lines";
-    }
-    return { built, shape };
-  }
+  //   if (lines.length) {
+  //     shape = "lines";
+  //   }
+  //   return { built, shape };
+  // }
 
-  function stringifyCircle(currentPoint) {
-    return JSON.stringify({
-      cx: currentPoint.cx.baseVal.value,
-      cy: currentPoint.cy.baseVal.value,
-      r: currentPoint.r.baseVal.value,
-      style: currentPoint.style,
-    });
-  }
+  // function stringifyCircle(currentPoint) {
+  //   return JSON.stringify({
+  //     cx: currentPoint.cx.baseVal.value,
+  //     cy: currentPoint.cy.baseVal.value,
+  //     r: currentPoint.r.baseVal.value,
+  //     style: currentPoint.style,
+  //   });
+  // }
 
-  function stringifyPoint(builtCircle) {
-    return JSON.stringify({
-      groups: builtCircle,
-    });
-  }
+  // function stringifyPoint(builtCircle) {
+  //   return JSON.stringify({
+  //     groups: builtCircle,
+  //   });
+  // }
 
   socket.on("show draw", (data) => {
     if (showDrawing) {
-      let circle;
-      let connected = false;
+      //let circle;
+      //let connected = false;
 
-      data.built.forEach((pt, index) => {
-        pt = JSON.parse(pt);
-        circle = JSON.parse(pt.groups);
-        connected = false;
-        if (data.shape === "lines") {
-          connected = true;
-        }
-        drawPoint(circle.cx, circle.cy, connected, circle.r, circle.style.fill);
-        if (index == data.built.length - 1) {
-          points = [];
-          lines = [];
-        }
-      });
+      drawPoint(data.x, data.y, true, data.thickness, data.color);
+
+      // data.built.forEach((pt, index) => {
+      //   pt = JSON.parse(pt);
+      //   circle = JSON.parse(pt.groups);
+      //   connected = false;
+      //   //if (data.shape === "lines") {
+      //     //connected = true;
+      //   //}
+      //   console.log(circle)
+
+      //   // drawPoint(circle.cx, circle.cy, connected, circle.r, circle.style.fill);
+      //   // if (index == data.built.length - 1) {
+      //   //   points = [];
+      //   //   lines = [];
+      //   // }
+      // });
     }
     showDrawing = true;
+  });
+
+  socket.on("stop drawing", () => {
+    if (showDrawing) {
+      points = [];
+    }
   });
 
   socket.on("show erasing", () => {
     console.log("show erasing");
     //if (!erasingShowed) {
-      erasingShowed = true;
-      document.querySelector("#erase").click();
-      erasingShowed = false;
+    erasingShowed = true;
+    document.querySelector("#erase").click();
+    erasingShowed = false;
     //}
   });
 });

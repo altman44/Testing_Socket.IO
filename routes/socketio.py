@@ -24,3 +24,8 @@ def eraseDrawing():
     room = session['room']
     print('a')
     emit('show erasing', room=room)
+
+@socketio.on('stop drawing')
+def stopDrawing():
+    room = session['room']
+    emit('stop drawing', room=room)
