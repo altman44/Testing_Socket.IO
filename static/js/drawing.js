@@ -16,8 +16,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     svg.on("mousedown", function () {
       draw = true;
-      //const coords = d3.mouse(this);
-      //drawPoint(coords[0], coords[1], false);
+      const coords = d3.mouse(this);
+      x = coords[0];
+      y = coords[1];
+      const thickness = document.querySelector("#thickness-picker").value;
+      const color = document.querySelector("#color-picker").value;
+      drawPoint(x, y, false);
+      socket.emit("draw", { x, y, connected: false, thickness, color });
     });
 
     // svg.on("mouseup", () => {
@@ -39,12 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const coords = d3.mouse(this);
       const x = coords[0];
       const y = coords[1];
-      drawPoint(x, y, true);
-      //const { built, shape } = catchDraw();
       const thickness = document.querySelector("#thickness-picker").value;
       const color = document.querySelector("#color-picker").value;
+      drawPoint(x, y, true, thickness, color);
+      //const { built, shape } = catchDraw();
       showDrawing = false;
-      socket.emit("draw", { x, y, thickness, color });
+      socket.emit("draw", { x, y, connected: true, thickness, color });
     });
 
     document.querySelector("#erase").onclick = () => {
@@ -73,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (connect && points.length) {
       const lastPoint = points[points.length - 1];
+      console.log('Last: ', lastPoint.attr('cx'), lastPoint.attr('cy'))
       const line = svg
         .append("line")
         .attr("x1", lastPoint.attr("cx"))
@@ -94,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .style("fill", color);
 
     points.push(point);
+    console.log('x & y: ', x, y)
     allPoints.push(point);
   }
 
@@ -137,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
       //let circle;
       //let connected = false;
 
-      drawPoint(data.x, data.y, true, data.thickness, data.color);
+      drawPoint(data.x, data.y, data.connected, data.thickness, data.color);
 
       // data.built.forEach((pt, index) => {
       //   pt = JSON.parse(pt);
