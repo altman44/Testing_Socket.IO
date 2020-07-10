@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let svg = null;
   let showDrawing = true;
   let erasingShowed = false;
+  // let drawingPromises = []; // this will contain promises to wait the point being draw to keep with the other one
+  let drawingPromise;
 
   render();
 
@@ -14,15 +16,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // Create the selection area
     svg = d3.select("#draw").attr("height", "100%").attr("width", "100%");
 
-    svg.on("mousedown", function () {
+    svg.on("mousedown", async function () {
       draw = true;
       const coords = d3.mouse(this);
       x = coords[0];
       y = coords[1];
       const thickness = document.querySelector("#thickness-picker").value;
       const color = document.querySelector("#color-picker").value;
-      drawPoint(x, y, false);
-      socket.emit("draw", { x, y, connected: false, thickness, color });
+      const connected = false;
+      //await drawPoint(x, y, connected);
+      points = [];
+      socket.emit("draw", { x, y, connected, thickness, color });
     });
 
     // svg.on("mouseup", () => {
@@ -37,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
       socket.emit("stop drawing");
     });
 
-    svg.on("mousemove", function () {
+    svg.on("mousemove", async function () {
       if (!draw) {
         return;
       }
@@ -46,10 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const y = coords[1];
       const thickness = document.querySelector("#thickness-picker").value;
       const color = document.querySelector("#color-picker").value;
-      drawPoint(x, y, true, thickness, color);
-      //const { built, shape } = catchDraw();
+      const connected = true;
+      //let allowedToContinue = false;
+      //while (!allowedToContinue) {
+
+      await drawPoint(x, y, connected, thickness, color);
       showDrawing = false;
-      socket.emit("draw", { x, y, connected: true, thickness, color });
+      socket.emit("draw", { x, y, connected, thickness, color });
+      //}
+      //const { built, shape } = catchDraw();
     });
 
     document.querySelector("#erase").onclick = () => {
@@ -69,39 +78,47 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function drawPoint(x, y, connect, thickness, color) {
-    if (!thickness) {
-      thickness = document.querySelector("#thickness-picker").value;
-    }
-    if (!color) {
-      color = document.querySelector("#color-picker").value;
-    }
+    drawingPromise = new Promise((resolve, reject) => {
+      // Thickness and color
+      if (!thickness) {
+        thickness = document.querySelector("#thickness-picker").value;
+      }
+      if (!color) {
+        color = document.querySelector("#color-picker").value;
+      }
 
-    if (connect && points.length) {
-      const lastPoint = points[points.length - 1];
-      console.log('Last: ', lastPoint.attr('cx'), lastPoint.attr('cy'))
-      const line = svg
-        .append("line")
-        .attr("x1", lastPoint.attr("cx"))
-        .attr("y1", lastPoint.attr("cy"))
-        .attr("x2", x)
-        .attr("y2", y)
-        .attr("stroke-width", thickness * 2)
-        .style("stroke", color);
+      // Is the last point connected with the current one?
+      if (connect && points.length) {
+        const lastPoint = points[points.length - 1];
+        console.log("Last: ", lastPoint.attr("cx"), lastPoint.attr("cy"));
+        const line = svg
+          .append("line")
+          .attr("x1", lastPoint.attr("cx"))
+          .attr("y1", lastPoint.attr("cy"))
+          .attr("x2", x)
+          .attr("y2", y)
+          .attr("stroke-width", thickness * 2)
+          .style("stroke", color);
 
-      lines.push(line);
-      allLines.push(line);
-    }
+        lines.push(line);
+        allLines.push(line);
+      }
 
-    const point = svg
-      .append("circle")
-      .attr("cx", x)
-      .attr("cy", y)
-      .attr("r", thickness)
-      .style("fill", color);
+      const point = svg
+        .append("circle")
+        .attr("cx", x)
+        .attr("cy", y)
+        .attr("r", thickness)
+        .style("fill", color);
 
-    points.push(point);
-    console.log('x & y: ', x, y)
-    allPoints.push(point);
+      points.push(point);
+      console.log("x & y: ", x, y);
+      allPoints.push(point);
+      resolve(0);
+    });
+    //drawingPromises.push(newDrawingPromise);
+    //return newDrawingPromise;
+    return drawingPromise;
   }
 
   // function catchDraw() {
