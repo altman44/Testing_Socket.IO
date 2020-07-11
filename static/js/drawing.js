@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let erasingShowed = false;
   // let drawingPromises = []; // this will contain promises to wait the point being draw to keep with the other one
   let drawingPromise;
+  let drawedPoint = false;
 
   render();
 
@@ -24,6 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const thickness = document.querySelector("#thickness-picker").value;
       const color = document.querySelector("#color-picker").value;
       const connected = false;
+      //do {
+        //if (drawedPoint) {
+          drawPoint(x, y, connected);
+        //}
+      //} while(!drawedPoint);
       //await drawPoint(x, y, connected);
       points = [];
       socket.emit("draw", { x, y, connected, thickness, color });
@@ -54,7 +60,11 @@ document.addEventListener("DOMContentLoaded", () => {
       //let allowedToContinue = false;
       //while (!allowedToContinue) {
 
-      await drawPoint(x, y, connected, thickness, color);
+      do {
+        if (drawedPoint) {
+          drawPoint(x, y, connected, thickness, color);
+        }
+      } while(!drawedPoint);
       showDrawing = false;
       socket.emit("draw", { x, y, connected, thickness, color });
       //}
@@ -114,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
       points.push(point);
       console.log("x & y: ", x, y);
       allPoints.push(point);
+      drawedPoint = true;
       resolve(0);
     });
     //drawingPromises.push(newDrawingPromise);
